@@ -163,12 +163,21 @@ exports.createTour = async (req, res) => {
                 },
                 {
                     $group: {
-                        _id: null,
+                        _id:{ $toUpper:'$difficulty'},
+                        // _id: '$ratingAverage',
+                        numTours: { $sum: 1},
+                        numRating: { $sum: '$ratingsQuantity' },
                         avgRating: { $avg: '$ratingsAverage' },
                         avgPrice: { $avg: '$price' },
                         minPrice: { $avg: '$price' },
                         maxPrice: { $avg: '$price' },
                     }
+                },
+                {
+                    $sort: { avgPrice: 1 }
+                },
+                {
+                    $match: { _id: { $ne : 'EASY' } }
                 }
             ]);
 
