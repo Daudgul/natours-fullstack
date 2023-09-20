@@ -11,7 +11,7 @@ mongoose.connect(DB, {
     useCreateIndex: true,
     useFindAndModify: false
 }).then(con => {
-    console.log(con)
+    // console.log(con)
     console.log('DB connection successful!')
 }).catch(error => {
     // Handle the error

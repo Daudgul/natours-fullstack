@@ -175,10 +175,10 @@ exports.createTour = async (req, res) => {
                 },
                 {
                     $sort: { avgPrice: 1 }
-                },
-                {
-                    $match: { _id: { $ne : 'EASY' } }
                 }
+                // {
+                //     $match: { _id: { $ne : 'EASY' } }
+                // }
             ]);
 
             res.status(201).json({
@@ -187,6 +187,60 @@ exports.createTour = async (req, res) => {
                     stats
                 }
             });
+            
+        } catch (error) {
+            res.status(404).json({
+                status: 'fail',
+                message: err
+            })
+        }
+    }
+
+    exports.getMonthlyPlan = async (req,res) => {
+        try {
+            const year = req.params.year * 1;
+
+            const plan = await Tour.aggregate([
+                {
+                    $unwind: '$startDates'
+                },
+                {
+                    $match: {
+                        startDates: {
+                            $gte: new Date(`${year}-01-01`),
+                            $lte: new Date(`${year}-12-31`),
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $month: '$startDates'},
+                        numTourStarts: { $sum: 1  },
+                        tours: { $push: '$name'}
+                    }
+                },
+                {
+                    $addFields: { month: '$_id'}
+                },
+                {
+                    $project: {
+                        _id: 0
+                    }
+                },
+                {
+                    $sort: { numTourStarts: -1 }
+                },
+                {
+                    $limit: 12
+                }
+            ])
+
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    plan
+                }
+            })
             
         } catch (error) {
             res.status(404).json({
