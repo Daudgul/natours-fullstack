@@ -92,7 +92,6 @@ const tourSchema = new mongoose.Schema({
     next();
   })
 
-  // Can use multiple middleware in this 
   // tourSchema.pre('save', function(next) {
   //   console.log('Will save document...')
   //   next();
