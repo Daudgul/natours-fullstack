@@ -1,0 +1,11 @@
+## Node Modules
+/node_modules
+## package-lock
+package-lock.json
+## env files
+*.env
+## zip files
+*.zip
+## images
+/staticimages
+/.prettierignore
