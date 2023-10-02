@@ -30,6 +30,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'A user must have a password'],
         minlength: 8, // You can set a minimum password length
+        select: false 
         // You might want to add additional validation for password complexity
     },
     passwordConfirm: {
@@ -43,6 +44,7 @@ const userSchema = new mongoose.Schema({
             message: 'Passwords do not match',
         },
     },
+    passwordChngedAt: Date
 });
 
 
@@ -54,6 +56,19 @@ userSchema.pre('save', async function(next) {
     this.passwordConfirm = undefined;
     next();
 })
+
+userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
+    return await bcrypt.compare(candidatePassword, userPassword)
+}
+
+userSchema.methods.changedPasswordAfter = function(JWTTimesstamp) {
+    if (this.passwordChangedAt){
+        const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+        return JWTTimesstamp < changedTimestamp;
+
+    }
+    return false
+}
 
 
 const User = mongoose.model('User', userSchema);
