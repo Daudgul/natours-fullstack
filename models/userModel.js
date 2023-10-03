@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         // 'required' should not be set if a user is not required to have a photo
     },
+    role: {
+        type: String,
+        enum: ['user', 'guide', 'lead-guide', 'admin'],
+        default: 'user'
+    },
     password: {
         type: String,
         required: [true, 'A user must have a password'],
