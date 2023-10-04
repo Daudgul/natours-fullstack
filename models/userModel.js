@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator'); // You need to import the validator library if you're using it
 const bcrypt = require('bcryptjs');
@@ -49,7 +50,9 @@ const userSchema = new mongoose.Schema({
             message: 'Passwords do not match',
         },
     },
-    passwordChngedAt: Date
+    passwordChngedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date
 });
 
 
@@ -73,6 +76,16 @@ userSchema.methods.changedPasswordAfter = function(JWTTimesstamp) {
 
     }
     return false
+}
+
+userSchema.method.createPasswordResetToken = function() {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
 }
 
 
